@@ -3,107 +3,150 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hệ thống Quản lý Đồ án</title>
+    <title>Hệ thống Quản lý BCTT & KLTN</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
-        .hidden { display: none; }
-        body { background-color: #f8f9fa; }
+        body { background-color: #f0f2f5; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        .hidden { display: none !important; }
+        .card { border: none; border-radius: 15px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+        .navbar { background: #004a99 !important; }
     </style>
 </head>
 <body>
 
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-4">
+<nav class="navbar navbar-dark mb-4">
     <div class="container">
-        <a class="navbar-brand" href="#">Portal Đào Tạo</a>
-        <div id="user-info" class="text-white"></div>
+        <a class="navbar-brand font-weight-bold" href="#">🎓 PORTAL QUẢN LÝ ĐỒ ÁN</a>
+        <span id="userDisplayName" class="text-white small"></span>
     </div>
 </nav>
 
 <div class="container">
-    <div id="login-section" class="card shadow p-4 mx-auto" style="max-width: 400px;">
-        <h3 class="text-center">Đăng nhập</h3>
-        <div class="mb-3">
-            <label>Mã số (User)</label>
-            <input type="text" id="username" class="form-control" placeholder="SV01 hoặc GV01">
-        </div>
-        <div class="mb-3">
-            <label>Mật khẩu</label>
-            <input type="password" id="password" class="form-control" value="123">
-        </div>
-        <button onclick="handleLogin()" class="btn btn-primary w-100">Đăng nhập</button>
-        <p class="mt-2 small text-muted text-center">Gợi ý: SV01 (Sinh viên), GV01 (Giảng viên)</p>
+    <div id="loader" class="text-center my-5">
+        <div class="spinner-border text-primary" role="status"></div>
+        <p class="mt-2">Đang tải dữ liệu từ hệ thống...</p>
     </div>
 
-    <div id="student-section" class="hidden">
-        <h2>Khu vực Sinh viên</h2>
+    <div id="login-screen" class="hidden">
+        <div class="card p-4 mx-auto" style="max-width: 400px;">
+            <h4 class="text-center mb-4">Đăng Nhập</h4>
+            <div class="mb-3">
+                <input type="text" id="userInput" class="form-control" placeholder="Nhập MSSV hoặc Mã GV">
+            </div>
+            <button onclick="handleLogin()" class="btn btn-primary w-100">Vào hệ thống</button>
+            <div class="mt-3 small text-muted text-center">Sử dụng dữ liệu trong Sheet 'Data' để đăng nhập</div>
+        </div>
+    </div>
+
+    <div id="student-screen" class="hidden">
         <div class="row">
-            <div class="col-md-4">
-                <div class="list-group">
-                    <button class="list-group-item list-group-item-action active">Thông tin chung</button>
-                    <button class="list-group-item list-group-item-action">Đăng ký đề tài BCTT</button>
-                    <button class="list-group-item list-group-item-action">Theo dõi trạng thái</button>
+            <div class="col-md-4 mb-4">
+                <div class="card p-3">
+                    <ul class="nav flex-column nav-pills">
+                        <li class="nav-item"><a class="nav-link active" href="#">Thông tin chung</a></li>
+                        <li class="nav-item"><a class="nav-link" href="#">Đăng ký đề tài</a></li>
+                        <li class="nav-item"><a class="nav-link" href="#">Trạng thái: <span class="badge bg-warning">Mới</span></a></li>
+                    </ul>
                 </div>
             </div>
             <div class="col-md-8">
-                <div class="card p-3">
-                    <h4>Đăng ký Báo cáo thực tập</h4>
-                    <input type="text" class="form-control mb-2" placeholder="Tên đề tài">
-                    <select class="form-select mb-2">
-                        <option>Chọn lĩnh vực...</option>
-                        <option>Phát triển Web</option>
-                        <option>AI & Data</option>
-                    </select>
-                    <button class="btn btn-success">Gửi đăng ký</button>
+                <div class="card p-4">
+                    <h5>Đăng ký Báo cáo thực tập (BCTT)</h5>
+                    <hr>
+                    <div class="mb-3">
+                        <label class="form-label">Tên đề tài</label>
+                        <input type="text" id="topicName" class="form-control" placeholder="Ví dụ: Tìm hiểu về ReactJS">
+                    </div>
+                    <button onclick="submitReg()" id="btnSubmit" class="btn btn-success">Gửi yêu cầu đăng ký</button>
                 </div>
             </div>
         </div>
     </div>
 
-    <div id="teacher-section" class="hidden">
-        <h2>Khu vực Giảng viên</h2>
-        <table class="table table-bordered bg-white shadow-sm">
-            <thead class="table-dark">
-                <tr>
-                    <th>MSSV</th>
-                    <th>Họ tên</th>
-                    <th>Đề tài</th>
-                    <th>Hành động</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td>SV001</td>
-                    <td>Nguyễn Văn A</td>
-                    <td>Web quản lý bán hàng</td>
-                    <td>
-                        <button class="btn btn-sm btn-success">Duyệt</button>
-                        <button class="btn btn-sm btn-danger">Từ chối</button>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
+    <div id="teacher-screen" class="hidden">
+        <div class="card p-4">
+            <h5>Danh sách Sinh viên hướng dẫn</h5>
+            <div class="table-responsive">
+                <table class="table table-hover mt-3">
+                    <thead class="table-light">
+                        <tr>
+                            <th>MSSV</th><th>Họ Tên</th><th>Đề tài</th><th>Trạng thái</th>
+                        </tr>
+                    </thead>
+                    <tbody id="sv-list">
+                        </tbody>
+                </table>
+            </div>
+        </div>
     </div>
 </div>
 
 <script>
-    function handleLogin() {
-        const user = document.getElementById('username').value.toUpperCase();
-        const loginSection = document.getElementById('login-section');
-        const studentSection = document.getElementById('student-section');
-        const teacherSection = document.getElementById('teacher-section');
-        const userInfo = document.getElementById('user-info');
+    // --- CẤU HÌNH ---
+    const APP_URL = "DÁN_LINK_WEB_APP_CỦA_BẠN_VÀO_ĐÂY";
+    let userData = [];
+    let currentUser = null;
 
-        if (user.startsWith('SV')) {
-            loginSection.classList.add('hidden');
-            studentSection.classList.remove('hidden');
-            userInfo.innerText = "Xin chào Sinh viên: " + user;
-        } else if (user.startsWith('GV')) {
-            loginSection.classList.add('hidden');
-            teacherSection.classList.remove('hidden');
-            userInfo.innerText = "Xin chào Giảng viên: " + user;
-        } else {
-            alert("Sai tài khoản! Thử lại với SV01 hoặc GV01");
+    // Tải dữ liệu khi mở trang
+    window.onload = async () => {
+        try {
+            const res = await fetch(APP_URL);
+            userData = await res.json();
+            document.getElementById('loader').classList.add('hidden');
+            document.getElementById('login-screen').classList.remove('hidden');
+        } catch (e) {
+            alert("Lỗi kết nối dữ liệu! Hãy kiểm tra link Web App.");
         }
+    };
+
+    function handleLogin() {
+        const input = document.getElementById('userInput').value.trim();
+        // Tìm user theo cột 'ID' hoặc 'MSSV' (tùy tên cột trong Sheet của bạn)
+        currentUser = userData.find(u => u.ID == input || u.MSSV == input);
+
+        if (currentUser) {
+            document.getElementById('login-screen').classList.add('hidden');
+            document.getElementById('userDisplayName').innerText = "Chào, " + (currentUser.HoTen || currentUser.Name);
+            
+            if (currentUser.Role === "SV") {
+                document.getElementById('student-screen').classList.remove('hidden');
+            } else {
+                document.getElementById('teacher-screen').classList.remove('hidden');
+                loadTeacherData();
+            }
+        } else {
+            alert("Không tìm thấy tài khoản này!");
+        }
+    }
+
+    async function submitReg() {
+        const detai = document.getElementById('topicName').value;
+        if (!detai) return alert("Vui lòng nhập tên đề tài");
+        
+        document.getElementById('btnSubmit').disabled = true;
+        document.getElementById('btnSubmit').innerText = "Đang gửi...";
+
+        const payload = {
+            mssv: currentUser.ID || currentUser.MSSV,
+            hoten: currentUser.HoTen || currentUser.Name,
+            detai: detai
+        };
+
+        await fetch(APP_URL, {
+            method: "POST",
+            body: JSON.stringify(payload)
+        });
+
+        alert("Đăng ký thành công!");
+        document.getElementById('topicName').value = "";
+        document.getElementById('btnSubmit').disabled = false;
+        document.getElementById('btnSubmit').innerText = "Gửi yêu cầu đăng ký";
+    }
+
+    function loadTeacherData() {
+        // Log tạm dữ liệu để GV thấy (Tính năng này sẽ phát triển thêm sau khi có data DangKy)
+        const tbody = document.getElementById('sv-list');
+        tbody.innerHTML = "<tr><td colspan='4' class='text-center'>Hiện chưa có sinh viên đăng ký mới</td></tr>";
     }
 </script>
 
